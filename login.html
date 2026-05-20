@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Đăng nhập hệ thống quản lý bệnh viện HIS" />
+    <title>Đăng nhập - HIS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="login-body">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="fas fa-heartbeat"></i>
+                <h1>HIS</h1>
+                <p>Hệ thống quản lý bệnh nhân</p>
+            </div>
+            <form id="loginForm" autocomplete="off">
+                <div class="login-form-group">
+                    <label for="login-username">Tên đăng nhập</label>
+                    <input type="text" id="login-username" placeholder="Nhập tên đăng nhập" autofocus />
+                </div>
+                <div class="login-form-group">
+                    <label for="login-password">Mật khẩu</label>
+                    <input type="password" id="login-password" placeholder="Nhập mật khẩu" />
+                </div>
+                <div class="login-error" id="login-error"></div>
+                <button type="submit" class="btn btn-primary login-btn" id="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                </button>
+            </form>
+            <div class="login-hint">
+                <p><strong>Tài khoản test:</strong></p>
+                <p>admin / admin123</p>
+                <p>doctor / doctor123</p>
+                <p>nurse / nurse123</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+</body>
+
+</html>

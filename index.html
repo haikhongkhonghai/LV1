@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Hệ thống quản lý lịch hẹn khám bệnh và bệnh nhân" />
+    <title>Quản lý lịch hẹn khám</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar collapsed" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-heartbeat"></i>
+                <span class="logo-text">HIS</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" id="nav-appointments" data-page="appointments">
+                <i class="fas fa-calendar-check"></i>
+                <span>Lịch hẹn khám</span>
+            </a>
+            <a href="#" class="nav-item" id="nav-patients" data-page="patients">
+                <i class="fas fa-user-injured"></i>
+                <span>Quản lý bệnh nhân</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <button class="toggle-sidebar" id="toggleSidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title" id="pageTitle">Quản lý lịch hẹn khám</h1>
+            <button class="btn-logout" id="btn-logout" title="Đăng xuất">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Đăng xuất</span>
+            </button>
+        </header>
+
+        <!--  PAGE: APPOINTMENTS -->
+        <section class="page-content active" id="page-appointments">
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="filter-apt-name">Tên người bệnh</label>
+                        <input type="text" id="filter-apt-name" placeholder="Nhập tên người bệnh..." />
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-apt-code">Mã người bệnh</label>
+                        <input type="text" id="filter-apt-code" placeholder="Nhập mã người bệnh..." />
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-apt-phone">Số điện thoại</label>
+                        <input type="text" id="filter-apt-phone" placeholder="Nhập SĐT..." />
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-apt-date-from">Từ ngày</label>
+                        <input type="date" id="filter-apt-date-from" />
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-apt-date-to">Đến ngày</label>
+                        <input type="date" id="filter-apt-date-to" />
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn btn-search" id="btn-search-apt">
+                            <i class="fas fa-search"></i> Tìm kiếm
+                        </button>
+                        <button class="btn btn-reset" id="btn-reset-apt">
+                            <i class="fas fa-times"></i> Xóa lọc
+                        </button>
+                    </div>
+                </div>
+                <div class="filter-row-right">
+                    <button class="btn btn-primary" id="btn-add-appointment">
+                        <i class="fas fa-plus"></i> Thêm lịch hẹn
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+                <div class="table-wrapper">
+                    <table class="data-table" id="appointments-table">
+                        <thead>
+                            <tr>
+                                <th class="col-stt">STT</th>
+                                <th class="col-status">Trạng thái</th>
+                                <th class="col-name">Tên người bệnh</th>
+                                <th class="col-phone">SĐT</th>
+                                <th class="col-apt-date" style="cursor: pointer; user-select: none;"
+                                    id="th-sort-apt-date">
+                                    Ngày hẹn khám <i class="fas fa-sort" id="icon-sort-apt-date"></i>
+                                </th>
+                                <th class="col-time">Khung giờ</th>
+                                <th class="col-clinic">Phòng khám</th>
+                                <th class="col-service">Danh sách dịch vụ</th>
+                                <th class="col-note">Nội dung yêu cầu</th>
+                                <th class="col-doctor">Bác sĩ khám</th>
+                                <th class="col-remark">Ghi chú</th>
+                                <th class="col-action">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointments-tbody">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination -->
+                <div class="pagination-container">
+                    <div class="pagination-info" id="apt-pagination-info"></div>
+                    <div class="pagination" id="apt-pagination"></div>
+                    <div class="page-size-selector">
+                        <select id="apt-page-size">
+                            <option value="10">10 / trang</option>
+                            <option value="20" selected>20 / trang</option>
+                            <option value="30">30 / trang</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!--  PAGE: PATIENTS  -->
+        <section class="page-content" id="page-patients">
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="filter-pt-name">Tên người bệnh</label>
+                        <input type="text" id="filter-pt-name" placeholder="Nhập tên người bệnh..." />
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-pt-code">Mã người bệnh</label>
+                        <input type="text" id="filter-pt-code" placeholder="Nhập mã người bệnh..." />
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-pt-phone">Số điện thoại</label>
+                        <input type="text" id="filter-pt-phone" placeholder="Nhập SĐT..." />
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-pt-gender">Giới tính</label>
+                        <select id="filter-pt-gender">
+                            <option value="">-- Giới tính --</option>
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                        </select>
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn btn-search" id="btn-search-pt">
+                            <i class="fas fa-search"></i> Tìm kiếm
+                        </button>
+                        <button class="btn btn-reset" id="btn-reset-pt">
+                            <i class="fas fa-times"></i> Xóa lọc
+                        </button>
+                    </div>
+                </div>
+                <div class="filter-row-right">
+                    <button class="btn btn-primary" id="btn-add-patient">
+                        <i class="fas fa-plus"></i> Thêm mới
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+                <div class="table-wrapper">
+                    <table class="data-table" id="patients-table">
+                        <thead>
+                            <tr>
+                                <th class="col-stt">STT</th>
+                                <th class="col-pt-code">Mã người bệnh</th>
+                                <th class="col-pt-name">Tên người bệnh</th>
+                                <th class="col-dob">Năm sinh</th>
+                                <th class="col-gender">Giới tính</th>
+                                <th class="col-address">Địa chỉ</th>
+                                <th class="col-phone">SĐT</th>
+                                <th class="col-created">Ngày tạo</th>
+                                <th class="col-action-apt">Lịch hẹn</th>
+                                <th class="col-action-del">Xóa</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patients-tbody">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination -->
+                <div class="pagination-container">
+                    <div class="pagination-info" id="pt-pagination-info"></div>
+                    <div class="pagination" id="pt-pagination"></div>
+                    <div class="page-size-selector">
+                        <select id="pt-page-size">
+                            <option value="10">10 / trang</option>
+                            <option value="20" selected>20 / trang</option>
+                            <option value="30">30 / trang</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODALS -->
+
+    <!-- Add Appointment Modal -->
+    <div class="modal" id="modal-add-appointment">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Thêm lịch hẹn</h2>
+                <button class="btn-close" id="btn-close-appointment"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="appointment-form">
+                    <!-- Search Row -->
+                    <div class="form-search-row">
+                        <div class="form-group search-group">
+                            <label>Tìm kiếm người bệnh <span class="required">*</span></label>
+                            <input type="text" id="apt-search-patient" placeholder="Nhập tên người bệnh"
+                                autocomplete="off">
+                            <div class="error-msg" id="apt-search-patient-err"></div>
+                            <div class="autocomplete-dropdown" id="patient-autocomplete"></div>
+                        </div>
+                    </div>
+
+                    <!-- Patient Info Card -->
+                    <div class="patient-info-card">
+                        <div class="card-header">Thông tin người bệnh</div>
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div><span class="info-label">Họ tên:</span> <strong class="info-value"
+                                        id="apt-pi-name"></strong></div>
+                                <div><span class="info-label">Mã:</span> <strong class="info-value"
+                                        id="apt-pi-code"></strong></div>
+                                <div><span class="info-label">Giới tính:</span> <strong class="info-value"
+                                        id="apt-pi-gender"></strong></div>
+                                <div><span class="info-label">Ngày Sinh:</span> <strong class="info-value"
+                                        id="apt-pi-dob"></strong></div>
+                                <div><span class="info-label">Số điện thoại:</span> <strong class="info-value"
+                                        id="apt-pi-phone"></strong></div>
+                                <div><span class="info-label">Ngày khám gần đây:</span> <span class="info-value"
+                                        id="apt-pi-lastvisit"></span></div>
+                                <div><span class="info-label">Địa chỉ:</span> <span class="info-value"
+                                        id="apt-pi-address"></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Form Grid -->
+                    <div class="form-grid-layout">
+                        <!-- Left Column -->
+                        <div class="form-left-col">
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label>Ngày khám <span class="required">*</span></label>
+                                    <input type="date" id="apt-date">
+                                    <div class="error-msg" id="apt-date-err"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Giờ khám <span class="required">*</span></label>
+                                    <input type="time" id="apt-time" value="00:00">
+                                    <div class="error-msg" id="apt-time-err"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Dịch vụ</label>
+                                <select class="w-100" id="apt-service">
+                                    <option value="">Chọn dịch vụ khám</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="form-right-col">
+                            <div class="form-group">
+                                <label>Trạng thái</label>
+                                <select class="w-100" id="apt-status">
+                                    <option value="">Chọn trạng thái</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Phòng khám</label>
+                                <select class="w-100" id="apt-clinic">
+                                    <option value="">Chọn phòng khám</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Bác sĩ khám</label>
+                                <select class="w-100" id="apt-doctor">
+                                    <option value="">Chọn bác sĩ</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Textareas -->
+                    <div class="form-group mt-3">
+                        <label>Nội dung yêu cầu</label>
+                        <textarea rows="3" class="w-100" id="apt-request"></textarea>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label>Ghi chú</label>
+                        <textarea rows="3" class="w-100" id="apt-remark"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-reset" id="btn-cancel-appointment">Hủy</button>
+                <button class="btn btn-primary" id="btn-save-appointment">Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Patient Modal -->
+    <div class="modal" id="modal-add-patient">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Thêm bệnh nhân mới</h2>
+                <button class="btn-close" id="btn-close-patient"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="appointment-form">
+                    <div class="form-grid-layout">
+                        <!-- Left Column -->
+                        <div class="form-left-col">
+                            <div class="form-group">
+                                <label>Tên bệnh nhân <span class="required">*</span></label>
+                                <input type="text" class="w-100" id="pt-name" placeholder="Nhập họ và tên bệnh nhân">
+                                <div class="error-msg" id="pt-name-err"></div>
+                            </div>
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label>Ngày sinh <span class="required">*</span></label>
+                                    <input type="date" class="w-100" id="pt-birthdate">
+                                    <div class="error-msg" id="pt-birthdate-err"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Giới tính <span class="required">*</span></label>
+                                    <select class="w-100" id="pt-gender-modal">
+                                        <option value="">Chọn giới tính</option>
+                                        <option value="Nam">Nam</option>
+                                        <option value="Nữ">Nữ</option>
+                                    </select>
+                                    <div class="error-msg" id="pt-gender-modal-err"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Right Column -->
+                        <div class="form-right-col">
+                            <div class="form-group">
+                                <label>Số điện thoại <span class="required">*</span></label>
+                                <input type="tel" class="w-100" id="pt-phone" placeholder="Nhập số điện thoại">
+                                <div class="error-msg" id="pt-phone-err"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Tỉnh/Thành phố</label>
+                                <select class="w-100" id="pt-province">
+                                    <option value="">Chọn tỉnh/thành phố</option>
+                                    <!-- Options will be populated by API -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Địa chỉ chi tiết</label>
+                        <textarea rows="2" class="w-100" id="pt-address"
+                            placeholder="Nhập số nhà, tên đường, phường/xã, quận/huyện..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-reset" id="btn-cancel-patient">Hủy</button>
+                <button class="btn btn-primary" id="btn-save-patient">Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patient Appointments List Modal -->
+    <div class="modal" id="modal-patient-appointments">
+        <div class="modal-content" style="max-width:960px">
+            <div class="modal-header">
+                <h2><i class="fas fa-calendar-check" style="color:var(--primary);margin-right:0.5rem"></i>Lịch hẹn của
+                    bệnh nhân</h2>
+                <button class="btn-close" id="btn-close-patient-apts"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:0">
+                <!-- Patient summary bar -->
+                <div class="patient-apt-summary" id="patient-apt-summary"></div>
+                <!-- Appointments table -->
+                <div class="table-wrapper" style="max-height:400px; overflow:auto">
+                    <table class="data-table" id="patient-apt-table" style="min-width:800px">
+                        <thead>
+                            <tr>
+                                <th style="width:40px">STT</th>
+                                <th style="width:100px">Trạng thái</th>
+                                <th style="width:110px">Ngày hẹn</th>
+                                <th style="width:110px">Khung giờ</th>
+                                <th style="width:140px">Phòng khám</th>
+                                <th style="width:150px">Dịch vụ</th>
+                                <th style="width:100px">Bác sĩ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patient-apt-tbody">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-reset" id="btn-close-patient-apts-footer">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Dialog -->
+    <div class="modal" id="confirm-dialog">
+        <div class="modal-content confirm-modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-exclamation-triangle" style="color:var(--warning);margin-right:0.5rem"></i>Xác nhận
+                </h2>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-message" style="font-size:0.9375rem;text-align:center;padding:0.5rem 0"></p>
+            </div>
+            <div class="modal-footer" style="justify-content:center">
+                <button class="btn btn-reset" id="confirm-no">Hủy bỏ</button>
+                <button class="btn btn-primary" id="confirm-yes" style="background-color:var(--danger)">Xác
+                    nhận</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="auth.js"></script>
+    <script src="storageManager.js"></script>
+    <script src="patient.js"></script>
+    <script src="appointment.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
