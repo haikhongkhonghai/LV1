@@ -24,22 +24,22 @@ const Auth = (() => {
             return { success: false, message: 'Tên đăng nhập hoặc mật khẩu không đúng.' };
         }
 
-        // Lưu thông tin đăng nhập vào sessionStorage
+        // Lưu thông tin đăng nhập vào localStorage
         const session = { username: user.username, fullName: user.fullName, loggedInAt: new Date().toISOString() };
-        sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+        localStorage.setItem(SESSION_KEY, JSON.stringify(session));
 
         return { success: true, message: 'Đăng nhập thành công!', user: session };
     }
 
     // Xóa session và redirect về trang login
     function logout() {
-        sessionStorage.removeItem(SESSION_KEY);
+        localStorage.removeItem(SESSION_KEY);
         window.location.href = 'login.html';
     }
 
     // Lấy thông tin user hiện tại đang login
     function getCurrentUser() {
-        const data = sessionStorage.getItem(SESSION_KEY);
+        const data = localStorage.getItem(SESSION_KEY);
         if (!data) return null;
         try {
             return JSON.parse(data);
