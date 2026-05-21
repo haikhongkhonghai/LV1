@@ -91,6 +91,14 @@ const Auth = (() => {
             return false;
         }
         document.getElementById('btn-logout')?.addEventListener('click', () => logout());
+
+        // Lắng nghe sự kiện storage từ tab khác để đồng bộ đăng xuất
+        window.addEventListener('storage', (e) => {
+            if (e.key === SESSION_KEY && !e.newValue) {
+                window.location.href = 'login.html';
+            }
+        });
+
         return true;
     }
 
