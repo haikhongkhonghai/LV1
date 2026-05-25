@@ -126,13 +126,14 @@ class MedicalAppointment {
     // Tìm kiếm lịch hẹn theo bộ lọc
     static search(filters = {}) {
         let appointments = MedicalAppointment.getAll();
-        if (filters.name) {
-            const kw = filters.name.toLowerCase();
-            appointments = appointments.filter(a => a.patientName.toLowerCase().includes(kw));
+        if (filters.nameOrCode) {
+            const kw = filters.nameOrCode.toLowerCase();
+            appointments = appointments.filter(a =>
+                a.patientName.toLowerCase().includes(kw) || a.patientId.toLowerCase().includes(kw)
+            );
         }
-        if (filters.code) {
-            const kw = filters.code.toLowerCase();
-            appointments = appointments.filter(a => a.patientId.toLowerCase().includes(kw));
+        if (filters.status) {
+            appointments = appointments.filter(a => a.status === filters.status);
         }
         if (filters.phone) {
             appointments = appointments.filter(a => a.patientPhone.includes(filters.phone));

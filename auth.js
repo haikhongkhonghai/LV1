@@ -12,8 +12,15 @@ const Auth = (() => {
 
     // Xử lý login, check username/password với danh sách mockup
     function login(username, password) {
-        if (!username || !password) {
+    
+        if(!username&&!password){
             return { success: false, message: 'Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.' };
+        }
+        else if(!username){
+            return { success: false, message: 'Vui lòng nhập tên đăng nhập.' };
+        }
+        else if(!password){
+            return { success: false, message: 'Vui lòng nhập mật khẩu.' };
         }
 
         const user = USERS.find(

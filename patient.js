@@ -112,13 +112,11 @@ class Patient {
     // Tìm kiếm bệnh nhân theo bộ lọc
     static search(filters = {}) {
         let patients = Patient.getAll();
-        if (filters.name) {
-            const kw = filters.name.toLowerCase();
-            patients = patients.filter(p => p.name.toLowerCase().includes(kw));
-        }
-        if (filters.code) {
-            const kw = filters.code.toLowerCase();
-            patients = patients.filter(p => p.id.toLowerCase().includes(kw));
+        if (filters.nameOrCode) {
+            const kw = filters.nameOrCode.toLowerCase();
+            patients = patients.filter(p =>
+                p.name.toLowerCase().includes(kw) || p.id.toLowerCase().includes(kw)
+            );
         }
         if (filters.phone) {
             patients = patients.filter(p => p.phone.includes(filters.phone));

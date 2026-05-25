@@ -152,6 +152,19 @@ function closeModalById(id) {
 }
 
 // ==================== RENDER DỮ LIỆU LÊN BẢNG ====================
+function checkValid(status, _date) {
+    if (status != "Đã xác nhận")
+        return true
+    const currentDate = new Date();
+    const year = _date.slice(0, 4);
+    const month = _date.slice(5, 7);
+    const day = _date.slice(8);
+    const date = new Date(year, month - 1, day);
+    if (currentDate >= date)
+        return false
+    else
+        return true
+}
 // Vẽ bảng lịch hẹn khám
 function renderAptTable() {
     const tbody = document.getElementById('appointments-tbody');
@@ -166,32 +179,45 @@ function renderAptTable() {
             return s.sortDateDirection === 'asc' ? dateA - dateB : dateB - dateA;
         });
     }
+
     // Tính toán phân trang
     const total = s.data.length;
     const start = (s.page - 1) * s.pageSize;
     const pageData = s.data.slice(start, start + s.pageSize);
+    let i = 0;
     // Render danh sách
     if (pageData.length === 0) {
         tbody.innerHTML = '<tr class="empty-row"><td colspan="12"><i class="fas fa-calendar-times" style="font-size:2rem;margin-bottom:0.5rem;display:block;opacity:0.3"></i>Không có lịch hẹn nào</td></tr>';
     } else {
-        tbody.innerHTML = pageData.map((a, i) => `<tr>
-            <td>${start + i + 1}</td>
-            <td><span class="status-badge ${getStatusClass(a.status)}">${escapeHTML(a.status)}</span></td>
-            <td title="${escapeHTML(a.patientName)}">${escapeHTML(a.patientName)}</td>
-            <td>${escapeHTML(a.patientPhone)}</td>
-            <td>${formatDate(a.appointmentDate)}</td>
-            <td>${escapeHTML(a.timeSlot)}</td>
-            <td title="${escapeHTML(a.clinic)}">${escapeHTML(a.clinic)}</td>
-            <td title="${escapeHTML(a.services)}">${escapeHTML(a.services)}</td>
-            <td title="${escapeHTML(a.requestContent)}">${escapeHTML(a.requestContent)}</td>
-            <td>${escapeHTML(a.doctor)}</td>
-            <td title="${escapeHTML(a.remark)}">${escapeHTML(a.remark)}</td>
-            <td><button class="action-btn delete" title="Xóa" data-id="${escapeHTML(a.id)}" data-type="apt"><i class="fas fa-trash-alt"></i></button></td>
-        </tr>`).join('');
+        let html = '';
+        for (const a of pageData) {
+            var check = checkValid(a.status, a.appointmentDate);
+            const rowStyle = check ? '' : ' style="background-color: rgba(173, 17, 17, 0.2)"';
+            html += `<tr${rowStyle}>
+                <td>${start + i + 1}</td>
+                <td><span class="status-badge ${getStatusClass(a.status)}">${escapeHTML(a.status)}</span></td>
+                <td title="${escapeHTML(a.patientName)}" >${escapeHTML(a.patientName)}</td>
+                <td>${escapeHTML(a.patientPhone)}</td>
+                <td>${formatDate(a.appointmentDate)}</td>
+                <td>${escapeHTML(a.timeSlot)}</td>
+                <td title="${escapeHTML(a.clinic)}">${escapeHTML(a.clinic)}</td>
+                <td title="${escapeHTML(a.services)}">${escapeHTML(a.services)}</td>
+                <td title="${escapeHTML(a.requestContent)}">${escapeHTML(a.requestContent)}</td>
+                <td>${escapeHTML(a.doctor)}</td>
+                <td title="${escapeHTML(a.remark)}">${escapeHTML(a.remark)}</td>
+                <td><button class="action-btn delete" title="Xóa" data-id="${escapeHTML(a.id)}" data-type="apt"><i class="fas fa-trash-alt"></i></button></td>
+                </tr>`;
+            i++;
+        }
+        tbody.innerHTML = html;
     }
     renderPagination('apt-pagination', 'apt-pagination-info', total, s.page, s.pageSize, p => { s.page = p; renderAptTable(); });
 }
-
+function getProvinceName(codename) {
+    if (!codename) return '';
+    const prov = appState.provinces?.find(x => x.codename === codename);
+    return prov ? prov.name : codename;
+}
 // Đổ dữ liệu danh sách các Bệnh nhân.
 function renderPtTable() {
     const tbody = document.getElementById('patients-tbody');
@@ -262,6 +288,14 @@ function showPatientAppointments(patientId) {
     // Sắp xếp danh sách
     const appointments = MedicalAppointment.getByPatientId(patientId)
         .sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
+    let addressdetail = patient.address;
+    let provincename = getProvinceName(patient.province);
+    if (addressdetail) {
+        fullAddress = addressdetail + ", " + provincename;
+    }
+    else {
+        fullAddress = provincename;
+    }
 
     // Refill tóm tắt thông tin trên header
     const summary = document.getElementById('patient-apt-summary');
@@ -274,6 +308,9 @@ function showPatientAppointments(patientId) {
             <span>SĐT: <strong>${escapeHTML(patient.phone)}</strong></span>
             <span class="info-sep">|</span>
             <span>Tổng lịch hẹn: <strong>${appointments.length}</strong></span>
+			<span class="info-sep">|</span>
+			<span>Địa chỉ chi tiết: <strong>${fullAddress}</strong></span>
+
         </div>
     `;
 
@@ -466,11 +503,13 @@ function setupEvents() {
             });
             return;
         }
+    });
 
+    document.getElementById('appointments-tbody').addEventListener('dblclick', e => {
         // Bỏ qua nếu click vào nút action
         if (e.target.closest('.action-btn')) return;
 
-        // Mở modal sửa thông tin khi ấn vào dòng
+        // Mở modal sửa thông tin khi dblclick vào dòng
         const row = e.target.closest('tr');
         if (row && !row.classList.contains('empty-row')) {
             const delBtnInRow = row.querySelector('.action-btn.delete');
@@ -534,7 +573,9 @@ function setupEvents() {
             showPatientAppointments(aptBtn.dataset.patientId);
             return;
         }
+    });
 
+    document.getElementById('patients-tbody').addEventListener('dblclick', e => {
         // Bỏ qua nếu click trực tiếp vào nút action hoặc các thành phần không phải hàng
         if (e.target.closest('.action-btn')) return;
 
@@ -569,8 +610,8 @@ function setupEvents() {
     // Box Tìm kiếm bộ lọc Page 1 (Lịch hẹn)
     document.getElementById('btn-search-apt').addEventListener('click', () => {
         const filters = {
-            name: document.getElementById('filter-apt-name').value.trim(),
-            code: document.getElementById('filter-apt-code').value.trim(),
+            nameOrCode: document.getElementById('filter-apt-name').value.trim(),
+            status: document.getElementById('filter-apt-status').value,
             phone: document.getElementById('filter-apt-phone').value.trim(),
             dateFrom: document.getElementById('filter-apt-date-from').value,
             dateTo: document.getElementById('filter-apt-date-to').value
@@ -580,15 +621,15 @@ function setupEvents() {
         renderAptTable();
     });
     document.getElementById('btn-reset-apt').addEventListener('click', () => {
-        ['filter-apt-name', 'filter-apt-code', 'filter-apt-phone', 'filter-apt-date-from', 'filter-apt-date-to'].forEach(id => document.getElementById(id).value = '');
+        ['filter-apt-name', 'filter-apt-phone', 'filter-apt-date-from', 'filter-apt-date-to'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('filter-apt-status').value = '';
         appState.apt.filteredData = null; appState.apt.page = 1; renderAptTable();
     });
 
     // Box Tìm kiếm bộ lọc Page 2 (Danh sách bệnh nhân)
     document.getElementById('btn-search-pt').addEventListener('click', () => {
         const filters = {
-            name: document.getElementById('filter-pt-name').value.trim(),
-            code: document.getElementById('filter-pt-code').value.trim(),
+            nameOrCode: document.getElementById('filter-pt-name').value.trim(),
             phone: document.getElementById('filter-pt-phone').value.trim(),
             gender: document.getElementById('filter-pt-gender').value
         };
@@ -597,7 +638,7 @@ function setupEvents() {
         renderPtTable();
     });
     document.getElementById('btn-reset-pt').addEventListener('click', () => {
-        ['filter-pt-name', 'filter-pt-code', 'filter-pt-phone'].forEach(id => document.getElementById(id).value = '');
+        ['filter-pt-name', 'filter-pt-phone'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('filter-pt-gender').value = '';
         appState.pt.filteredData = null; appState.pt.page = 1; renderPtTable();
     });
