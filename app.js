@@ -12,6 +12,7 @@
 const appState = {
     apt: { page: 1, pageSize: 20, data: [], filteredData: null, sortDateDirection: null },
     pt: { page: 1, pageSize: 20, data: [], filteredData: null },
+    prov: { page: 1, pageSize: 20, filteredData: null },
     selectedPatient: null,
     editingPatientId: null,
     editingAptId: null,
@@ -27,11 +28,11 @@ function seedIfEmpty() {
         { id: 'BN130520260001', name: 'Nguyễn Văn A', birthDate: '1985-03-15', gender: 'Nam', phone: '0901234567', province: 'ho_chi_minh', address: '', createdAt: '01/01/2026' },
         { id: 'BN130520260002', name: 'Nguyễn Văn B', birthDate: '1990-07-22', gender: 'Nữ', phone: '0912345678', province: 'ho_chi_minh', address: '', createdAt: '05/01/2026' },
         { id: 'BN130520260003', name: 'Nguyễn Văn C', birthDate: '1978-11-08', gender: 'Nam', phone: '0923456789', province: 'ho_chi_minh', address: '', createdAt: '10/01/2026' },
-        { id: 'BN130520260004', name: 'Nguyễn Văn D', birthDate: '1995-01-30', gender: 'Nữ', phone: '0934567890', province: 'ho_chi_minh', address: '', createdAt: '15/02/2026' },
-        { id: 'BN130520260005', name: 'Nguyễn Văn E', birthDate: '1982-09-12', gender: 'Nam', phone: '0945678901', province: 'ho_chi_minh', address: '', createdAt: '20/02/2026' },
-        { id: 'BN130520260006', name: 'Nguyễn Văn F', birthDate: '1988-05-25', gender: 'Nữ', phone: '0956789012', province: 'da_nang', address: '', createdAt: '01/03/2026' },
-        { id: 'BN130520260007', name: 'Nguyễn Văn G', birthDate: '1975-12-03', gender: 'Nam', phone: '0967890123', province: 'ha_noi', address: '', createdAt: '10/03/2026' },
-        { id: 'BN130520260008', name: 'Nguyễn Văn H', birthDate: '1992-06-18', gender: 'Nữ', phone: '0978901234', province: 'ho_chi_minh', address: '', createdAt: '15/03/2026' }
+        { id: 'BN130520260004', name: 'Ngô Thế B', birthDate: '1995-01-30', gender: 'Nữ', phone: '0934567890', province: 'ho_chi_minh', address: '', createdAt: '15/02/2026' },
+        { id: 'BN130520260005', name: 'Ngô Thế E', birthDate: '1982-09-12', gender: 'Nam', phone: '0945678901', province: 'ho_chi_minh', address: '', createdAt: '20/02/2026' },
+        { id: 'BN130520260006', name: 'Ngô Thế F', birthDate: '1988-05-25', gender: 'Nữ', phone: '0956789012', province: 'da_nang', address: '', createdAt: '01/03/2026' },
+        { id: 'BN130520260007', name: 'Trần Văn G', birthDate: '1975-12-03', gender: 'Nam', phone: '0967890123', province: 'ha_noi', address: '', createdAt: '10/03/2026' },
+        { id: 'BN130520260008', name: 'Trần Văn H', birthDate: '1992-06-18', gender: 'Nữ', phone: '0978901234', province: 'ho_chi_minh', address: '', createdAt: '15/03/2026' }
     ];
 
     StorageManager.saveAll('patients', patients);
@@ -105,6 +106,14 @@ function escapeHTML(str) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
+}
+
+// Hàm xử lý tiếng việt
+function removeVietnamese(str) {
+    return str.normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D');
 }
 
 // Hàm hiển thị màu dựa vào trạng thái. 
@@ -206,7 +215,7 @@ function renderAptTable() {
                 <td>${escapeHTML(a.doctor)}</td>
                 <td title="${escapeHTML(a.remark)}">${escapeHTML(a.remark)}</td>
                 <td><button class="action-btn delete" title="Xóa" data-id="${escapeHTML(a.id)}" data-type="apt"><i class="fas fa-trash-alt"></i></button></td>
-                </tr>`;
+                </tr$>`;
             i++;
         }
         tbody.innerHTML = html;
@@ -256,28 +265,96 @@ function renderPtTable() {
     renderPagination('pt-pagination', 'pt-pagination-info', total, s.page, s.pageSize, p => { s.page = p; renderPtTable(); });
 }
 
-// Điều tiết các nút phân trang
+//Đổ dữ liệu danh sách các tỉnh thành
+function renderProvTable() {
+    const tbody = document.getElementById('provinces-tbody');
+    const s = appState.prov;
+    const data = s.filteredData || appState.provinces || [];
+    const total = data.length;
+    const start = (s.page - 1) * s.pageSize;
+    const pageData = data.slice(start, start + s.pageSize);
+    let i = 0;
+    if (pageData.length === 0) {
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="3"><i class="fas fa-map-marked-alt" style="font-size:2rem;margin-bottom:0.5rem;display:block;opacity:0.3"></i>Không tìm thấy tỉnh thành nào</td></tr>';
+    } else {
+        let html = '';
+        for (let prov of pageData) {
+            html += `<tr>
+                    <td>${start + i + 1}</td>
+                    <td title="${escapeHTML(prov.name)}">${escapeHTML(prov.name)}</td>
+                    <td title="${escapeHTML(prov.division_type)}">${escapeHTML(prov.division_type)}</td>
+                    </tr>`;
+            i++;
+        }
+        tbody.innerHTML = html;
+    }
+
+    renderPagination('prov-pagination', 'prov-pagination-info', total, s.page, s.pageSize, p => { s.page = p; renderProvTable(); });
+}
+
+// Hàm điều tiết hiển thị các nút phân trang trên giao diện
 function renderPagination(containerId, infoId, total, page, pageSize, onChange) {
+    // 1. Lấy các phần tử DOM hiển thị phân trang
     const container = document.getElementById(containerId);
     const infoEl = document.getElementById(infoId);
+    // 2. Tính toán tổng số trang (làm tròn lên, tối thiểu là 1 trang)
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
-    if (infoEl) infoEl.textContent = total > 0 ? `Trang ${page} / ${totalPages}` : '';
-    if (!container) return;
-
-    let html = `<button class="page-btn" ${page <= 1 ? 'disabled' : ''} data-page="${page - 1}"><i class="fas fa-chevron-left"></i></button>`;
-    let startP = Math.max(1, page - 2), endP = Math.min(totalPages, page + 2);
-    if (startP > 1) html += `<button class="page-btn" data-page="1">1</button>` + (startP > 2 ? '<span style="padding:0 4px">...</span>' : '');
-
-    for (let i = startP; i <= endP; i++) {
-        html += `<button class="page-btn ${i === page ? 'active' : ''}" data-page="${i}">${i}</button>`;
+    // 3. Hiển thị thông tin mô tả "Trang x / y"
+    if (infoEl) {
+        if (total > 0) {
+            infoEl.textContent = `Trang ${page} / ${totalPages}`;
+        } else {
+            infoEl.textContent = '';
+        }
     }
-    if (endP < totalPages) html += (endP < totalPages - 1 ? '<span style="padding:0 4px">...</span>' : '') + `<button class="page-btn" data-page="${totalPages}">${totalPages}</button>`;
-
-    html += `<button class="page-btn" ${page >= totalPages ? 'disabled' : ''} data-page="${page + 1}"><i class="fas fa-chevron-right"></i></button>`;
+    // Nếu không tìm thấy thẻ chứa các nút phân trang thì dừng hàm
+    if (!container) return;
+    // 4. Tạo nút "Trở về trước" (Prev)
+    let prevDisabled = '';
+    if (page <= 1) {
+        prevDisabled = 'disabled'; // Khóa nút nếu đang ở trang đầu
+    }
+    let html = `<button class="page-btn" ${prevDisabled} data-page="${page - 1}"><i class="fas fa-chevron-left"></i></button>`;
+    // 5. Xác định khoảng trang số sẽ hiển thị xung quanh trang hiện tại (± 2 trang)
+    let startP = Math.max(1, page - 2);
+    let endP = Math.min(totalPages, page + 2);
+    // 6. Hiển thị nút Trang 1 và dấu ba chấm "..." ở đầu nếu cần
+    if (startP > 1) {
+        html += `<button class="page-btn" data-page="1">1</button>`;
+        if (startP > 2) {
+            html += '<span style="padding:0 4px">...</span>';
+        }
+    }
+    // 7. Duyệt và tạo các nút số trang trong khoảng [startP, endP]
+    for (let i = startP; i <= endP; i++) {
+        let activeClass = '';
+        if (i === page) {
+            activeClass = 'active'; // Làm nổi bật trang hiện tại
+        }
+        html += `<button class="page-btn ${activeClass}" data-page="${i}">${i}</button>`;
+    }
+    // 8. Hiển thị dấu ba chấm "..." và nút Trang cuối cùng ở cuối nếu cần
+    if (endP < totalPages) {
+        if (endP < totalPages - 1) {
+            html += '<span style="padding:0 4px">...</span>';
+        }
+        html += `<button class="page-btn" data-page="${totalPages}">${totalPages}</button>`;
+    }
+    // 9. Tạo nút "Kế tiếp" (Next)
+    let nextDisabled = '';
+    if (page >= totalPages) {
+        nextDisabled = 'disabled'; // Khóa nút nếu đang ở trang cuối
+    }
+    html += `<button class="page-btn" ${nextDisabled} data-page="${page + 1}"><i class="fas fa-chevron-right"></i></button>`;
+    // 10. Đưa toàn bộ HTML các nút vào giao diện
     container.innerHTML = html;
-
-    container.querySelectorAll('.page-btn:not(:disabled)').forEach(btn => {
-        btn.addEventListener('click', () => onChange(parseInt(btn.dataset.page)));
+    // 11. Gán sự kiện click cho tất cả nút phân trang (ngoại trừ các nút bị khóa)
+    const activeButtons = container.querySelectorAll('.page-btn:not(:disabled)');
+    activeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const selectedPage = parseInt(btn.dataset.page);
+            onChange(selectedPage); // Kích hoạt callback tải dữ liệu trang mới
+        });
     });
 }
 
@@ -456,6 +533,19 @@ async function fetchProvinces() {
     try {
         const res = await fetch('https://provinces.open-api.vn/api/v2/');
         const data = await res.json();
+
+        data.sort((a, b) => {
+            if (a.codename === 'ha_noi')
+                return -1;
+            if (b.codename === 'ha_noi')
+                return 1;
+            if (a.codename === 'ho_chi_minh')
+                return -1;
+            if (b.codename === 'ho_chi_minh')
+                return 1;
+            return 0;
+        });
+
         appState.provinces = data;
 
         const select = document.getElementById('pt-province');
@@ -466,6 +556,7 @@ async function fetchProvinces() {
             });
             select.innerHTML = html;
         }
+        renderProvTable();
     } catch (e) {
         console.error("Lỗi tải tỉnh thành:", e);
     }
@@ -606,6 +697,42 @@ function setupEvents() {
             }
         }
     });
+
+    const btnSearchProv = document.getElementById('btn-search-prov');
+    if (btnSearchProv) {
+        btnSearchProv.addEventListener('click', () => {
+            const kw = document.getElementById('filter-prov-search').value.trim().toLowerCase();
+            if (!kw) {
+                appState.prov.filteredData = null;
+            } else {
+                appState.prov.filteredData = appState.provinces.filter(p =>
+                    removeVietnamese(p.name).toLowerCase().includes(kw) || p.codename.toLowerCase().includes(kw)
+                );
+            }
+            appState.prov.page = 1;
+            renderProvTable();
+        });
+    }
+
+    const btnResetProv = document.getElementById('btn-reset-prov');
+    if (btnResetProv) {
+        btnResetProv.addEventListener('click', () => {
+            const searchInput = document.getElementById('filter-prov-search');
+            if (searchInput) searchInput.value = '';
+            appState.prov.filteredData = null;
+            appState.prov.page = 1;
+            renderProvTable();
+        });
+    }
+
+    const provPageSize = document.getElementById('prov-page-size');
+    if (provPageSize) {
+        provPageSize.addEventListener('change', e => {
+            appState.prov.pageSize = parseInt(e.target.value);
+            appState.prov.page = 1;
+            renderProvTable();
+        });
+    }
 
     // Box Tìm kiếm bộ lọc Page 1 (Lịch hẹn)
     document.getElementById('btn-search-apt').addEventListener('click', () => {
@@ -898,6 +1025,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     renderAptTable();        // Load dữ liệu ban đầu lên bảng
     renderPtTable();
+    renderProvTable();
 
     const card = document.querySelector('.patient-info-card');
     if (card) card.style.display = 'none';

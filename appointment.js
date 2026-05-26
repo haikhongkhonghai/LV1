@@ -129,7 +129,7 @@ class MedicalAppointment {
         if (filters.nameOrCode) {
             const kw = filters.nameOrCode.toLowerCase();
             appointments = appointments.filter(a =>
-                a.patientName.toLowerCase().includes(kw) || a.patientId.toLowerCase().includes(kw)
+                removeVietnamese(a.patientName).toLowerCase().includes(kw) || a.patientId.toLowerCase().includes(kw)
             );
         }
         if (filters.status) {

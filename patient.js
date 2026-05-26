@@ -115,7 +115,7 @@ class Patient {
         if (filters.nameOrCode) {
             const kw = filters.nameOrCode.toLowerCase();
             patients = patients.filter(p =>
-                p.name.toLowerCase().includes(kw) || p.id.toLowerCase().includes(kw)
+                removeVietnamese(p.name).toLowerCase().includes(kw) || p.id.toLowerCase().includes(kw)
             );
         }
         if (filters.phone) {

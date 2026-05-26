@@ -31,6 +31,10 @@
                 <i class="fas fa-user-injured"></i>
                 <span>Quản lý bệnh nhân</span>
             </a>
+            <a href="#" class="nav-item" id="nav-provinces" data-page="provinces">
+                <i class="fa fa-map" aria-hidden="true"></i>
+                <span>Danh sách tỉnh thành</span>
+            </a>
         </nav>
     </aside>
 
@@ -205,6 +209,56 @@
                     <div class="pagination" id="pt-pagination"></div>
                     <div class="page-size-selector">
                         <select id="pt-page-size">
+                            <option value="10">10 / trang</option>
+                            <option value="20" selected>20 / trang</option>
+                            <option value="30">30 / trang</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!--  PAGE: PROVINCES  -->
+        <section class="page-content" id="page-provinces">
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="filter-prov-search">Tên / Mã tỉnh thành</label>
+                        <input type="text" id="filter-prov-search" placeholder="Nhập tên hoặc mã tỉnh thành..." />
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn btn-search" id="btn-search-prov">
+                            <i class="fas fa-search"></i> Tìm kiếm
+                        </button>
+                        <button class="btn btn-reset" id="btn-reset-prov">
+                            <i class="fas fa-times"></i> Xóa lọc
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Table -->
+            <div class="table-container">
+                <div class="table-wrapper">
+                    <table class="data-table" id="provinces-table">
+                        <thead>
+                            <tr>
+                                <th class="col-stt">STT</th>
+                                <th>Tên tỉnh thành</th>
+                                <th>Loại đơn vị</th>
+                            </tr>
+                        </thead>
+                        <tbody id="provinces-tbody">
+                            <!-- Được render tự động bằng JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination -->
+                <div class="pagination-container">
+                    <div class="pagination-info" id="prov-pagination-info"></div>
+                    <div class="pagination" id="prov-pagination"></div>
+                    <div class="page-size-selector">
+                        <select id="prov-page-size">
                             <option value="10">10 / trang</option>
                             <option value="20" selected>20 / trang</option>
                             <option value="30">30 / trang</option>
