@@ -25,26 +25,41 @@ function seedIfEmpty() {
     // Nếu đã có dữ liệu trong storage rồi thì không chạy lại nữa
     if (StorageManager.getAll('patients').length > 0) return;
     const patients = [
-        { id: 'BN130520260001', name: 'Nguyễn Văn A', birthDate: '1985-03-15', gender: 'Nam', phone: '0901234567', province: 'ho_chi_minh', address: '', createdAt: '01/01/2026' },
-        { id: 'BN130520260002', name: 'Nguyễn Văn B', birthDate: '1990-07-22', gender: 'Nữ', phone: '0912345678', province: 'ho_chi_minh', address: '', createdAt: '05/01/2026' },
-        { id: 'BN130520260003', name: 'Nguyễn Văn C', birthDate: '1978-11-08', gender: 'Nam', phone: '0923456789', province: 'ho_chi_minh', address: '', createdAt: '10/01/2026' },
-        { id: 'BN130520260004', name: 'Ngô Thế B', birthDate: '1995-01-30', gender: 'Nữ', phone: '0934567890', province: 'ho_chi_minh', address: '', createdAt: '15/02/2026' },
-        { id: 'BN130520260005', name: 'Ngô Thế E', birthDate: '1982-09-12', gender: 'Nam', phone: '0945678901', province: 'ho_chi_minh', address: '', createdAt: '20/02/2026' },
-        { id: 'BN130520260006', name: 'Ngô Thế F', birthDate: '1988-05-25', gender: 'Nữ', phone: '0956789012', province: 'da_nang', address: '', createdAt: '01/03/2026' },
-        { id: 'BN130520260007', name: 'Trần Văn G', birthDate: '1975-12-03', gender: 'Nam', phone: '0967890123', province: 'ha_noi', address: '', createdAt: '10/03/2026' },
-        { id: 'BN130520260008', name: 'Trần Văn H', birthDate: '1992-06-18', gender: 'Nữ', phone: '0978901234', province: 'ho_chi_minh', address: '', createdAt: '15/03/2026' }
+        { id: 'BN010120260001', name: 'Nguyễn Văn A', birthDate: '1985-03-15', gender: 'Nam', phone: '0901234567', province: 'ho_chi_minh', address: '', createdAt: '01/01/2026' },
+        { id: 'BN050120260001', name: 'Nguyễn Văn B', birthDate: '1990-07-22', gender: 'Nữ', phone: '0912345678', province: 'ho_chi_minh', address: '', createdAt: '05/01/2026' },
+        { id: 'BN100120260001', name: 'Nguyễn Văn C', birthDate: '1978-11-08', gender: 'Nam', phone: '0923456789', province: 'ho_chi_minh', address: '', createdAt: '10/01/2026' },
+        { id: 'BN150220260001', name: 'Ngô Thế B', birthDate: '1995-01-30', gender: 'Nữ', phone: '0934567890', province: 'ho_chi_minh', address: '', createdAt: '15/02/2026' },
+        { id: 'BN200220260001', name: 'Ngô Thế E', birthDate: '1982-09-12', gender: 'Nam', phone: '0945678901', province: 'ho_chi_minh', address: '', createdAt: '20/02/2026' },
+        { id: 'BN010320260001', name: 'Ngô Thế F', birthDate: '1988-05-25', gender: 'Nữ', phone: '0956789012', province: 'da_nang', address: '', createdAt: '01/03/2026' },
+        { id: 'BN100320260001', name: 'Trần Văn G', birthDate: '1975-12-03', gender: 'Nam', phone: '0967890123', province: 'ha_noi', address: '', createdAt: '10/03/2026' },
+        { id: 'BN150320260001', name: 'Trần Văn H', birthDate: '1992-06-18', gender: 'Nữ', phone: '0978901234', province: 'ho_chi_minh', address: '', createdAt: '15/03/2026' },
+        { id: 'BN100420260001', name: 'Trần Văn I', birthDate: '1999-09-12', gender: 'Nữ', phone: '0987890123', province: 'da_nang', address: '', createdAt: '10/04/2026' },
+        { id: 'BN010120260002', name: 'Trần Văn K', birthDate: '1995-03-15', gender: 'Nam', phone: '0901234567', province: 'ho_chi_minh', address: '', createdAt: '01/01/2026' },
+        { id: 'BN050120260002', name: 'Trần Văn L', birthDate: '1992-05-22', gender: 'Nữ', phone: '0912345678', province: 'ho_chi_minh', address: '', createdAt: '05/01/2026' },
+        { id: 'BN100120260002', name: 'Trần Văn M', birthDate: '1988-11-08', gender: 'Nam', phone: '0923456789', province: 'ho_chi_minh', address: '', createdAt: '10/01/2026' },
+        { id: 'BN150220260002', name: 'Trần Văn N', birthDate: '1998-01-30', gender: 'Nữ', phone: '0934567890', province: 'ho_chi_minh', address: '', createdAt: '15/02/2026' },
+        { id: 'BN200220260002', name: 'Trần Văn O', birthDate: '1985-09-12', gender: 'Nam', phone: '0945678901', province: 'ho_chi_minh', address: '', createdAt: '20/02/2026' },
+        { id: 'BN010320260002', name: 'Trần Văn P', birthDate: '1990-05-25', gender: 'Nữ', phone: '0956789012', province: 'da_nang', address: '', createdAt: '01/03/2026' },
+        { id: 'BN100320260002', name: 'Trần Văn Q', birthDate: '1978-12-03', gender: 'Nam', phone: '0967890123', province: 'ha_noi', address: '', createdAt: '10/03/2026' },
+        { id: 'BN150320260002', name: 'Trần Văn R', birthDate: '1995-06-18', gender: 'Nữ', phone: '0978901234', province: 'ho_chi_minh', address: '', createdAt: '15/03/2026' },
+        { id: 'BN100420260002', name: 'Trần Văn S', birthDate: '2000-09-12', gender: 'Nữ', phone: '0987890123', province: 'da_nang', address: '', createdAt: '10/04/2026' }
     ];
+
 
     StorageManager.saveAll('patients', patients);
     const ts = Date.now();
     const apts = [];
 
-    // Sinh ngẫu nhiên 40 mẫu appointments
-    for (let i = 0; i < 40; i++) {
+    // Sinh ngẫu nhiên 100 mẫu appointments trong tháng hiện tại
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth(); // 0-11
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    for (let i = 0; i < 100; i++) {
         const p = patients[Math.floor(Math.random() * patients.length)];
-        const date = new Date();
-        date.setDate(date.getDate() + Math.floor(Math.random() * 30)); // Trong vòng 30 ngày tới
-        const dateStr = date.toISOString().split('T')[0];
+        const randomDay = 1 + Math.floor(Math.random() * daysInMonth);
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(randomDay).padStart(2, '0')}`;
 
         const h = 8 + Math.floor(Math.random() * 9); // 8h - 16h
         const m = Math.random() > 0.5 ? 0 : 30;
