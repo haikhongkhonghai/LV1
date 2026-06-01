@@ -647,7 +647,7 @@ body {
     background-color: var(--surface);
     border-radius: var(--radius-lg);
     width: 90%;
-    max-width: 850px;
+    max-width: 800px;
     max-height: 90vh;
     display: flex;
     flex-direction: column;
@@ -808,6 +808,77 @@ body {
 .required {
     color: var(--danger);
 }
+
+/* === Avatar Upload === */
+.avatar-upload-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.avatar-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 60%;
+    border: 2px solid var(--border);
+    background-color: var(--secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.avatar-preview:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px var(--primary-light);
+}
+
+.avatar-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-preview #avatar-placeholder {
+    font-size: 2.5rem;
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+
+.avatar-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.btn-avatar-upload {
+    cursor: pointer;
+    font-size: 0.8125rem;
+    padding: 0.375rem 0.875rem;
+}
+
+.btn-avatar-remove {
+    font-size: 0.8125rem;
+    padding: 0.375rem 0.875rem;
+}
+
+.btn-avatar-remove:hover {
+    color: var(--danger) !important;
+    border-color: var(--danger) !important;
+}
+
+.avatar-hint {
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
 
 
 /* === Toast Notifications === */
@@ -1039,9 +1110,28 @@ body {
     line-height: 1.6;
 }
 
+/* === User Greeting (Topbar) === */
+.user-greeting {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.user-greeting i {
+    color: var(--primary);
+    font-size: 1.125rem;
+}
+
+.user-greeting strong {
+    color: var(--text-main);
+}
+
 /* === Logout Button (Topbar) === */
 .btn-logout {
-    margin-left: auto;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -1055,6 +1145,11 @@ body {
     cursor: pointer;
     font-family: inherit;
     transition: var(--transition);
+}
+
+/* Nếu không có greeting thì logout vẫn nằm bên phải */
+.topbar .btn-logout:first-of-type:not(.user-greeting ~ .btn-logout) {
+    margin-left: auto;
 }
 
 .btn-logout:hover {

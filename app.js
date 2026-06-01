@@ -131,6 +131,12 @@ function removeVietnamese(str) {
         .replace(/Đ/g, 'D');
 }
 
+// Hàm viết hoa chữ cái đầu tiên
+function capitalizeFirst(str) {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 // Hàm hiển thị màu dựa vào trạng thái. 
 function getStatusClass(status) {
     const map = { 'Chờ khám': 'status-pending', 'Đã xác nhận': 'status-progress', 'Đang khám': 'status-progress', 'Đã khám': 'status-completed', 'Đã hủy': 'status-cancelled' };
@@ -297,7 +303,7 @@ function renderProvTable() {
             html += `<tr>
                     <td>${start + i + 1}</td>
                     <td title="${escapeHTML(prov.name)}">${escapeHTML(prov.name)}</td>
-                    <td title="${escapeHTML(prov.division_type)}">${escapeHTML(prov.division_type)}</td>
+                    <td title="${escapeHTML(capitalizeFirst(prov.division_type))}">${escapeHTML(capitalizeFirst(prov.division_type))}</td>
                     </tr>`;
             i++;
         }
@@ -525,6 +531,101 @@ function resetPtForm() {
     ['pt-name', 'pt-birthdate', 'pt-phone', 'pt-address'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     ['pt-gender-modal', 'pt-province'].forEach(id => { const el = document.getElementById(id); if (el) el.selectedIndex = 0; });
     clearInlineErrors('modal-add-patient');
+    // Reset avatar
+    clearAvatarPreview();
+}
+
+// ==================== AVATAR UPLOAD ====================
+
+// Xóa preview ảnh đại diện và reset trạng thái
+function clearAvatarPreview() {
+    const img = document.getElementById('avatar-img');
+    const placeholder = document.getElementById('avatar-placeholder');
+    const removeBtn = document.getElementById('btn-remove-avatar');
+    const fileInput = document.getElementById('pt-avatar-input');
+
+    if (img) {
+        if (img.src && img.src.startsWith('blob:')) {
+            URL.revokeObjectURL(img.src); // Thu hồi memory của object URL cũ
+        }
+        img.style.display = 'none';
+        img.src = '';
+    }
+    if (placeholder) placeholder.style.display = '';
+    if (removeBtn) removeBtn.style.display = 'none';
+    if (fileInput) fileInput.value = '';
+}
+
+// Load avatar từ IndexedDB khi chỉnh sửa bệnh nhân
+async function loadAvatarForEdit(patientId) {
+    clearAvatarPreview();
+    try {
+        const blob = await AvatarDB.getAvatar(patientId);
+        if (blob) {
+            const dataURL = URL.createObjectURL(blob);
+            const img = document.getElementById('avatar-img');
+            const placeholder = document.getElementById('avatar-placeholder');
+            const removeBtn = document.getElementById('btn-remove-avatar');
+            if (img) { img.src = dataURL; img.style.display = 'block'; }
+            if (placeholder) placeholder.style.display = 'none';
+            if (removeBtn) removeBtn.style.display = '';
+        }
+    } catch (e) {
+        console.error('Lỗi load avatar:', e);
+    }
+}
+
+// Gắn sự kiện cho phần upload ảnh đại diện
+function setupAvatarUpload() {
+    const fileInput = document.getElementById('pt-avatar-input');
+    const previewBox = document.getElementById('avatar-preview');
+    const removeBtn = document.getElementById('btn-remove-avatar');
+    if (!fileInput) return;
+
+    // Khi chọn file ảnh
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validate: chỉ chấp nhận image
+        if (!file.type.startsWith('image/')) {
+            showToast('Vui lòng chọn file ảnh (JPG, PNG...)', 'error');
+            fileInput.value = '';
+            return;
+        }
+
+        // Validate: kích thước tối đa 2MB
+        if (file.size > 2 * 1024 * 1024) {
+            showToast('Kích thước ảnh tối đa là 2MB', 'error');
+            fileInput.value = '';
+            return;
+        }
+
+        // Thu hồi object URL cũ nếu có
+        const img = document.getElementById('avatar-img');
+        if (img && img.src.startsWith('blob:')) {
+            URL.revokeObjectURL(img.src);
+        }
+
+        // Hiển thị preview sử dụng URL.createObjectURL thay vì FileReader
+        const dataURL = URL.createObjectURL(file);
+        const placeholder = document.getElementById('avatar-placeholder');
+        if (img) { img.src = dataURL; img.style.display = 'block'; }
+        if (placeholder) placeholder.style.display = 'none';
+        if (removeBtn) removeBtn.style.display = '';
+    });
+
+    // Click vào khung preview cũng mở chọn file
+    if (previewBox) {
+        previewBox.addEventListener('click', () => fileInput.click());
+    }
+
+    // Nút xóa ảnh
+    if (removeBtn) {
+        removeBtn.addEventListener('click', () => {
+            clearAvatarPreview();
+        });
+    }
 }
 
 // Đổ dữ liệu tĩnh vào các ô Select
@@ -571,7 +672,6 @@ async function fetchProvinces() {
             });
             select.innerHTML = html;
         }
-        renderProvTable();
     } catch (e) {
         console.error("Lỗi tải tỉnh thành:", e);
     }
@@ -667,8 +767,10 @@ function setupEvents() {
                 return;
             }
 
-            showConfirm('Xóa bệnh nhân sẽ xóa cả lịch hẹn liên quan. Tiếp tục?', () => {
+            showConfirm('Xóa bệnh nhân sẽ xóa cả lịch hẹn liên quan. Tiếp tục?', async () => {
                 Patient.deleteById(patientId);
+                // Xóa avatar trong IndexedDB
+                await AvatarDB.deleteAvatar(patientId);
                 appState.pt.filteredData = null; appState.apt.filteredData = null;
                 renderPtTable(); renderAptTable(); showToast('Đã xóa bệnh nhân');
             });
@@ -708,6 +810,9 @@ function setupEvents() {
                 document.getElementById('pt-province').value = patient.province || '';
                 document.getElementById('pt-address').value = patient.address || '';
 
+                // Load avatar từ IndexedDB nếu có
+                loadAvatarForEdit(ptId);
+
                 openModalById('modal-add-patient');
             }
         }
@@ -726,6 +831,17 @@ function setupEvents() {
             }
             appState.prov.page = 1;
             renderProvTable();
+        });
+    }
+
+    // Enter để tìm kiếm ở ô Province
+    const filterProvSearch = document.getElementById('filter-prov-search');
+    if (filterProvSearch) {
+        filterProvSearch.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                btnSearchProv.click();
+            }
         });
     }
 
@@ -762,6 +878,19 @@ function setupEvents() {
         appState.apt.page = 1;
         renderAptTable();
     });
+
+    // Enter để tìm kiếm ở các ô text trong bộ lọc Lịch hẹn
+    ['filter-apt-name', 'filter-apt-phone'].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('btn-search-apt').click();
+                }
+            });
+        }
+    });
     document.getElementById('btn-reset-apt').addEventListener('click', () => {
         ['filter-apt-name', 'filter-apt-phone', 'filter-apt-date-from', 'filter-apt-date-to'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('filter-apt-status').value = '';
@@ -783,6 +912,19 @@ function setupEvents() {
         ['filter-pt-name', 'filter-pt-phone'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('filter-pt-gender').value = '';
         appState.pt.filteredData = null; appState.pt.page = 1; renderPtTable();
+    });
+
+    // Enter để tìm kiếm ở các ô text trong bộ lọc Bệnh nhân
+    ['filter-pt-name', 'filter-pt-phone'].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('btn-search-pt').click();
+                }
+            });
+        }
     });
 
     // Box chọn số lượng hiển thị
@@ -902,7 +1044,7 @@ function setupEvents() {
 
         if (!isValid) return;
 
-        const processSave = () => {
+        const processSave = async () => {
             const pt = new Patient({
                 id: appState.editingPatientId || null,
                 name: ptName,
@@ -915,6 +1057,19 @@ function setupEvents() {
             });
             const result = pt.save();
             if (!result.valid) { showToast(result.errors.join('. '), 'error'); return; }
+
+            // Xử lý avatar dựa trên trạng thái DOM (chọn file mới hoặc đã bị xóa)
+            const fileInput = document.getElementById('pt-avatar-input');
+            const previewImg = document.getElementById('avatar-img');
+            const hasPreview = previewImg && previewImg.style.display !== 'none' && previewImg.src !== '';
+
+            if (fileInput && fileInput.files && fileInput.files.length > 0) {
+                // Có chọn file mới từ thiết bị
+                await AvatarDB.saveAvatar(pt.id, fileInput.files[0]);
+            } else if (!hasPreview) {
+                // Không có ảnh preview (người dùng đã nhấn "Xóa ảnh" hoặc chưa từng có ảnh)
+                await AvatarDB.deleteAvatar(pt.id);
+            }
 
             showToast(appState.editingPatientId ? 'Cập nhật bệnh nhân thành công!' : 'Thêm bệnh nhân thành công!');
             closeModalById('modal-add-patient');
@@ -940,6 +1095,26 @@ function setupEvents() {
     });
 }
 
+// Theo dõi các trang đã được load dữ liệu
+const loadedPages = {};
+
+// Hàm load dữ liệu cho từng trang khi cần
+function loadPageData(pageId) {
+    if (loadedPages[pageId]) return; // Đã load rồi thì bỏ qua
+    switch (pageId) {
+        case 'appointments':
+            renderAptTable();
+            break;
+        case 'patients':
+            renderPtTable();
+            break;
+        case 'provinces':
+            renderProvTable();
+            break;
+    }
+    loadedPages[pageId] = true;
+}
+
 // Setup các hiệu ứng sidebar và chuyển trang
 function setupUI() {
     const sidebar = document.getElementById('sidebar');
@@ -947,6 +1122,18 @@ function setupUI() {
     const navItems = document.querySelectorAll('.nav-item');
     const pages = document.querySelectorAll('.page-content');
     const pageTitle = document.getElementById('pageTitle');
+
+    // Hiển thị Hello + username bên cạnh nút đăng xuất
+    const currentUser = Auth.getCurrentUser();
+    if (currentUser) {
+        const logoutBtn = document.getElementById('btn-logout');
+        if (logoutBtn) {
+            const greeting = document.createElement('span');
+            greeting.className = 'user-greeting';
+            greeting.innerHTML = `<i class="fas fa-user-circle"></i> Hello, <strong>${escapeHTML(currentUser.fullName || currentUser.username)}</strong>`;
+            logoutBtn.parentNode.insertBefore(greeting, logoutBtn);
+        }
+    }
 
     // Responsive sidebar có dạng 2 chế độ 
     if (toggleSidebar) {
@@ -971,6 +1158,9 @@ function setupUI() {
             pages.forEach(page => page.classList.remove('active'));
             const activePage = document.getElementById(`page-${pageId}`);
             if (activePage) activePage.classList.add('active');
+
+            // Lazy load: chỉ load dữ liệu khi click vào nav
+            loadPageData(pageId);
 
             const titleSpan = item.querySelector('span');
             if (titleSpan && pageTitle) pageTitle.textContent = titleSpan.textContent;
@@ -1034,13 +1224,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupUI();               // Cấu hình sidebar, responsive
     populateSelects();       // Đổ dữ liệu vào các ô select
     setupPatientSearch();    // Bật tính năng tìm kiếm gợi ý bệnh nhân
+    setupAvatarUpload();     // Bật tính năng upload ảnh đại diện
     setupEvents();           // Gắn các click event cho nút, table...
 
     await fetchProvinces();  // Gọi API lấy tỉnh/thành phố của VN
 
-    renderAptTable();        // Load dữ liệu ban đầu lên bảng
-    renderPtTable();
-    renderProvTable();
+    // Chỉ load trang đầu tiên
+    loadPageData('appointments');
 
     const card = document.querySelector('.patient-info-card');
     if (card) card.style.display = 'none';

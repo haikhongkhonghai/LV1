@@ -388,6 +388,23 @@
             </div>
             <div class="modal-body">
                 <div class="appointment-form">
+                    <!-- Avatar Upload Section -->
+                    <div class="avatar-upload-section">
+                        <div class="avatar-preview" id="avatar-preview">
+                            <img src="" alt="Avatar" id="avatar-img" style="display:none;">
+                            <i class="fas fa-user" id="avatar-placeholder"></i>
+                        </div>
+                        <div class="avatar-actions">
+                            <label class="btn btn-search btn-avatar-upload" for="pt-avatar-input">
+                                <i class="fas fa-camera"></i> Chọn ảnh
+                            </label>
+                            <input type="file" id="pt-avatar-input" accept="image/*" style="display:none;">
+                            <button type="button" class="btn btn-reset btn-avatar-remove" id="btn-remove-avatar" style="display:none;">
+                                <i class="fas fa-trash-alt"></i> Xóa ảnh
+                            </button>
+                        </div>
+                        <div class="avatar-hint">Định dạng: JPG, PNG. Tối đa 2MB</div>
+                    </div>
                     <div class="form-grid-layout">
                         <!-- Left Column -->
                         <div class="form-left-col">
@@ -503,6 +520,7 @@
 
     <!-- Scripts -->
     <script src="auth.js"></script>
+    <script src="avatarDB.js"></script>
     <script src="storageManager.js"></script>
     <script src="patient.js"></script>
     <script src="appointment.js"></script>
