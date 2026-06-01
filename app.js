@@ -236,7 +236,7 @@ function renderAptTable() {
                 <td>${escapeHTML(a.doctor)}</td>
                 <td title="${escapeHTML(a.remark)}">${escapeHTML(a.remark)}</td>
                 <td><button class="action-btn delete" title="Xóa" data-id="${escapeHTML(a.id)}" data-type="apt"><i class="fas fa-trash-alt"></i></button></td>
-                </tr$>`;
+                </tr>`;
             i++;
         }
         tbody.innerHTML = html;
