@@ -821,10 +821,11 @@ function setupEvents() {
     const btnSearchProv = document.getElementById('btn-search-prov');
     if (btnSearchProv) {
         btnSearchProv.addEventListener('click', () => {
-            const kw = document.getElementById('filter-prov-search').value.trim().toLowerCase();
-            if (!kw) {
+            const rawKw = document.getElementById('filter-prov-search').value.trim();
+            if (!rawKw) {
                 appState.prov.filteredData = null;
             } else {
+                const kw = removeVietnamese(rawKw).toLowerCase();
                 appState.prov.filteredData = appState.provinces.filter(p =>
                     removeVietnamese(p.name).toLowerCase().includes(kw) || p.codename.toLowerCase().includes(kw)
                 );
@@ -891,6 +892,13 @@ function setupEvents() {
             });
         }
     });
+
+    document.getElementById('filter-apt-status').addEventListener('change', (e) => {
+        e.preventDefault();
+        document.getElementById('btn-search-apt').click();
+    });
+
+
     document.getElementById('btn-reset-apt').addEventListener('click', () => {
         ['filter-apt-name', 'filter-apt-phone', 'filter-apt-date-from', 'filter-apt-date-to'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('filter-apt-status').value = '';

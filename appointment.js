@@ -127,7 +127,7 @@ class MedicalAppointment {
     static search(filters = {}) {
         let appointments = MedicalAppointment.getAll();
         if (filters.nameOrCode) {
-            const kw = filters.nameOrCode.toLowerCase();
+            const kw = removeVietnamese(filters.nameOrCode).toLowerCase();
             appointments = appointments.filter(a =>
                 removeVietnamese(a.patientName).toLowerCase().includes(kw) || a.patientId.toLowerCase().includes(kw)
             );

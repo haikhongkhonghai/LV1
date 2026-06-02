@@ -113,9 +113,15 @@ class Patient {
     static search(filters = {}) {
         let patients = Patient.getAll();
         if (filters.nameOrCode) {
-            const kw = filters.nameOrCode.toLowerCase();
+            const kw = removeVietnamese(filters.nameOrCode).toLowerCase();
             patients = patients.filter(p =>
                 removeVietnamese(p.name).toLowerCase().includes(kw) || p.id.toLowerCase().includes(kw)
+            );
+        }
+        if (filters.name) {
+            const kw = removeVietnamese(filters.name).toLowerCase();
+            patients = patients.filter(p =>
+                removeVietnamese(p.name).toLowerCase().includes(kw)
             );
         }
         if (filters.phone) {
