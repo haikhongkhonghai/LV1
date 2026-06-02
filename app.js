@@ -182,19 +182,6 @@ function closeModalById(id) {
 }
 
 // ==================== RENDER DỮ LIỆU LÊN BẢNG ====================
-function checkValid(status, _date) {
-    if (status != "Đã xác nhận")
-        return true
-    const currentDate = new Date();
-    const year = _date.slice(0, 4);
-    const month = _date.slice(5, 7);
-    const day = _date.slice(8);
-    const date = new Date(year, month - 1, day);
-    if (currentDate >= date)
-        return false
-    else
-        return true
-}
 // Vẽ bảng lịch hẹn khám
 function renderAptTable() {
     const tbody = document.getElementById('appointments-tbody');
@@ -221,9 +208,7 @@ function renderAptTable() {
     } else {
         let html = '';
         for (const a of pageData) {
-            var check = checkValid(a.status, a.appointmentDate);
-            const rowStyle = check ? '' : ' style="background-color: rgba(173, 17, 17, 0.2)"';
-            html += `<tr${rowStyle}>
+            html += `<tr>
                 <td>${start + i + 1}</td>
                 <td><span class="status-badge ${getStatusClass(a.status)}">${escapeHTML(a.status)}</span></td>
                 <td title="${escapeHTML(a.patientName)}" >${escapeHTML(a.patientName)}</td>
