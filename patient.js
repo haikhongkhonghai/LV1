@@ -88,16 +88,6 @@ class Patient {
         return { valid: true, errors: [] };
     }
 
-    delete() {
-        return StorageManager.deleteItem(Patient.STORAGE_KEY, this.id);
-    }
-
-    // Lấy năm sinh từ ngày sinh của bệnh nhân
-    getBirthYear() {
-        if (!this.birthDate) return '';
-        return new Date(this.birthDate).getFullYear();
-    }
-
     // Lấy toàn bộ danh sách bệnh nhân và map thành các thực thể Patient
     static getAll() {
         return StorageManager.getAll(Patient.STORAGE_KEY).map(d => new Patient(d));

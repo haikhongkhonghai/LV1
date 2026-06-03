@@ -3,7 +3,6 @@
 
 class MedicalAppointment {
     static STORAGE_KEY = 'appointments';
-    static ID_PREFIX = 'LH';
 
     static STATUSES = ['Chờ khám', 'Đã xác nhận', 'Đang khám', 'Đã khám', 'Đã hủy'];
     static CLINICS = [
@@ -101,11 +100,6 @@ class MedicalAppointment {
         }
 
         return { valid: true, errors: [] };
-    }
-
-    updateStatus(newStatus) {
-        this.status = newStatus;
-        StorageManager.updateItem(MedicalAppointment.STORAGE_KEY, this.id, this.toJSON());
     }
 
     delete() {

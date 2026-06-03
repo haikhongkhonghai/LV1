@@ -245,11 +245,6 @@ function renderPtTable() {
     if (pageData.length === 0) {
         tbody.innerHTML = '<tr class="empty-row"><td colspan="10"><i class="fas fa-user-slash" style="font-size:2rem;margin-bottom:0.5rem;display:block;opacity:0.3"></i>Không có bệnh nhân nào</td></tr>';
     } else {
-        const getProvinceName = (codename) => {
-            if (!codename) return '';
-            const prov = appState.provinces?.find(x => x.codename === codename);
-            return prov ? prov.name : codename;
-        };
 
         tbody.innerHTML = pageData.map((p, i) => {
             const cityName = getProvinceName(p.province);
@@ -373,6 +368,7 @@ function showPatientAppointments(patientId) {
         .sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
     let addressdetail = patient.address;
     let provincename = getProvinceName(patient.province);
+    let fullAddress;
     if (addressdetail) {
         fullAddress = addressdetail + ", " + provincename;
     }

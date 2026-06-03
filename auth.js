@@ -55,15 +55,6 @@ const Auth = (() => {
         }
     }
 
-    // Middleware bảo vệ trang, nếu chưa login thì đá về trang login.html
-    function requireAuth() {
-        if (!getCurrentUser()) {
-            window.location.href = 'login.html';
-            return false;
-        }
-        return true;
-    }
-
     // Khởi tạo trang login: Check session và gắn event submit form
     function initLoginPage() {
         // Nếu đã login rồi thì bay thẳng vào trang chủ index.html
@@ -109,7 +100,7 @@ const Auth = (() => {
         return true;
     }
 
-    return { login, logout, getCurrentUser, requireAuth, initLoginPage, initAuthGuard };
+    return { login, logout, getCurrentUser, initLoginPage, initAuthGuard };
 })();
 
 // Tự động chạy init khi load xong login.html
