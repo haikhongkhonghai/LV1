@@ -75,7 +75,8 @@ class Patient {
             const counter = String(maxNum + 1).padStart(4, '0');
 
             this.id = prefix + counter;
-            this.createdAt = new Date().toLocaleDateString('vi-VN');
+            const today2 = new Date();
+            this.createdAt = `${today2.getFullYear()}-${String(today2.getMonth() + 1).padStart(2, '0')}-${String(today2.getDate()).padStart(2, '0')}`;
         }
 
         const existing = StorageManager.findById(Patient.STORAGE_KEY, this.id);

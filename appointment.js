@@ -82,7 +82,8 @@ class MedicalAppointment {
 
         if (!this.id) {
             this.id = Date.now().toString(); // Dùng timestamp làm ID duy nhất
-            this.createdAt = new Date().toLocaleDateString('vi-VN');
+            const now = new Date();
+            this.createdAt = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
         }
 
         // Tự động đồng bộ tên và SĐT từ thông tin Bệnh nhân sang

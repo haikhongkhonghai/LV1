@@ -550,79 +550,40 @@ body {
     color: var(--info) !important;
 }
 
-/* === Pagination === */
-.pagination-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.5rem 2rem;
-    border-top: 1px solid var(--border);
-    background-color: var(--surface);
-    flex-wrap: wrap;
-    gap: 1rem;
-}
 
-.pagination-info {
-    font-size: 0.875rem;
-    color: var(--text-muted);
-}
-
-.pagination {
-    display: flex;
-    gap: 0.25rem;
-    align-items: center;
-}
-
-.page-btn {
-    min-width: 32px;
-    height: 32px;
-    padding: 0 0.5rem;
+/* === Scroll to Top Button === */
+.btn-scroll-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background-color: var(--surface);
-    color: var(--text-main);
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease, background-color 0.2s ease;
+    z-index: 90;
 }
 
-.page-btn:hover:not(:disabled) {
-    background-color: var(--secondary);
+.btn-scroll-top.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
 }
 
-.page-btn.active {
-    background-color: var(--primary);
-    color: white;
-    border-color: var(--primary);
-}
-
-.page-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background-color: var(--secondary);
-}
-
-.page-size-selector select {
-    padding: 0.4rem 2rem 0.4rem 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-size: 0.875rem;
-    color: var(--text-main);
-    background-color: var(--surface);
-    cursor: pointer;
-    outline: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.5rem center;
-    background-size: 1rem;
-}
-
-.page-size-selector select:focus {
-    border-color: var(--primary);
+.btn-scroll-top:hover {
+    background: var(--primary-hover);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.5);
 }
 
 /* === Modals === */
@@ -1229,12 +1190,6 @@ body {
         border-radius: var(--radius-md);
     }
 
-    .pagination-container {
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        padding: 0.75rem;
-    }
 
     .form-grid-layout {
         grid-template-columns: 1fr;

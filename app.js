@@ -10,9 +10,9 @@
 
 // ==================== QUẢN LÝ TRẠNG THÁI (STATE) ====================
 const appState = {
-    apt: { page: 1, pageSize: 20, data: [], filteredData: null, sortDateDirection: null },
-    pt: { page: 1, pageSize: 20, data: [], filteredData: null },
-    prov: { page: 1, pageSize: 20, filteredData: null },
+    apt: { data: [], filteredData: null, sortDateDirection: null },
+    pt: { data: [], filteredData: null },
+    prov: { filteredData: null },
     selectedPatient: null,
     editingPatientId: null,
     editingAptId: null,
@@ -25,24 +25,24 @@ function seedIfEmpty() {
     // Nếu đã có dữ liệu trong storage rồi thì không chạy lại nữa
     if (StorageManager.getAll('patients').length > 0) return;
     const patients = [
-        { id: 'BN010120260001', name: 'Nguyễn Văn A', birthDate: '1985-03-15', gender: 'Nam', phone: '0901234567', province: 'ho_chi_minh', address: '', createdAt: '01/01/2026' },
-        { id: 'BN050120260001', name: 'Nguyễn Văn B', birthDate: '1990-07-22', gender: 'Nữ', phone: '0912345678', province: 'ho_chi_minh', address: '', createdAt: '05/01/2026' },
-        { id: 'BN100120260001', name: 'Nguyễn Văn C', birthDate: '1978-11-08', gender: 'Nam', phone: '0923456789', province: 'ho_chi_minh', address: '', createdAt: '10/01/2026' },
-        { id: 'BN150220260001', name: 'Ngô Thế B', birthDate: '1995-01-30', gender: 'Nữ', phone: '0934567890', province: 'ho_chi_minh', address: '', createdAt: '15/02/2026' },
-        { id: 'BN200220260001', name: 'Ngô Thế E', birthDate: '1982-09-12', gender: 'Nam', phone: '0945678901', province: 'ho_chi_minh', address: '', createdAt: '20/02/2026' },
-        { id: 'BN010320260001', name: 'Ngô Thế F', birthDate: '1988-05-25', gender: 'Nữ', phone: '0956789012', province: 'da_nang', address: '', createdAt: '01/03/2026' },
-        { id: 'BN100320260001', name: 'Trần Văn G', birthDate: '1975-12-03', gender: 'Nam', phone: '0967890123', province: 'ha_noi', address: '', createdAt: '10/03/2026' },
-        { id: 'BN150320260001', name: 'Trần Văn H', birthDate: '1992-06-18', gender: 'Nữ', phone: '0978901234', province: 'ho_chi_minh', address: '', createdAt: '15/03/2026' },
-        { id: 'BN100420260001', name: 'Trần Văn I', birthDate: '1999-09-12', gender: 'Nữ', phone: '0987890123', province: 'da_nang', address: '', createdAt: '10/04/2026' },
-        { id: 'BN010120260002', name: 'Trần Văn K', birthDate: '1995-03-15', gender: 'Nam', phone: '0901234567', province: 'ho_chi_minh', address: '', createdAt: '01/01/2026' },
-        { id: 'BN050120260002', name: 'Trần Văn L', birthDate: '1992-05-22', gender: 'Nữ', phone: '0912345678', province: 'ho_chi_minh', address: '', createdAt: '05/01/2026' },
-        { id: 'BN100120260002', name: 'Trần Văn M', birthDate: '1988-11-08', gender: 'Nam', phone: '0923456789', province: 'ho_chi_minh', address: '', createdAt: '10/01/2026' },
-        { id: 'BN150220260002', name: 'Trần Văn N', birthDate: '1998-01-30', gender: 'Nữ', phone: '0934567890', province: 'ho_chi_minh', address: '', createdAt: '15/02/2026' },
-        { id: 'BN200220260002', name: 'Trần Văn O', birthDate: '1985-09-12', gender: 'Nam', phone: '0945678901', province: 'ho_chi_minh', address: '', createdAt: '20/02/2026' },
-        { id: 'BN010320260002', name: 'Trần Văn P', birthDate: '1990-05-25', gender: 'Nữ', phone: '0956789012', province: 'da_nang', address: '', createdAt: '01/03/2026' },
-        { id: 'BN100320260002', name: 'Trần Văn Q', birthDate: '1978-12-03', gender: 'Nam', phone: '0967890123', province: 'ha_noi', address: '', createdAt: '10/03/2026' },
-        { id: 'BN150320260002', name: 'Trần Văn R', birthDate: '1995-06-18', gender: 'Nữ', phone: '0978901234', province: 'ho_chi_minh', address: '', createdAt: '15/03/2026' },
-        { id: 'BN100420260002', name: 'Trần Văn S', birthDate: '2000-09-12', gender: 'Nữ', phone: '0987890123', province: 'da_nang', address: '', createdAt: '10/04/2026' }
+        { id: 'BN010120260001', name: 'Nguyễn Văn A', birthDate: '1985-03-15', gender: 'Nam', phone: '0901234567', province: 'ho_chi_minh', address: '', createdAt: '2026-01-01' },
+        { id: 'BN050120260001', name: 'Nguyễn Văn B', birthDate: '1990-07-22', gender: 'Nữ', phone: '0912345678', province: 'ho_chi_minh', address: '', createdAt: '2026-01-05' },
+        { id: 'BN100120260001', name: 'Nguyễn Văn C', birthDate: '1978-11-08', gender: 'Nam', phone: '0923456789', province: 'ho_chi_minh', address: '', createdAt: '2026-01-10' },
+        { id: 'BN150220260001', name: 'Ngô Thế B', birthDate: '1995-01-30', gender: 'Nữ', phone: '0934567890', province: 'ho_chi_minh', address: '', createdAt: '2026-02-15' },
+        { id: 'BN200220260001', name: 'Ngô Thế E', birthDate: '1982-09-12', gender: 'Nam', phone: '0945678901', province: 'ho_chi_minh', address: '', createdAt: '2026-02-20' },
+        { id: 'BN010320260001', name: 'Ngô Thế F', birthDate: '1988-05-25', gender: 'Nữ', phone: '0956789012', province: 'da_nang', address: '', createdAt: '2026-03-01' },
+        { id: 'BN100320260001', name: 'Trần Văn G', birthDate: '1975-12-03', gender: 'Nam', phone: '0967890123', province: 'ha_noi', address: '', createdAt: '2026-03-10' },
+        { id: 'BN150320260001', name: 'Trần Văn H', birthDate: '1992-06-18', gender: 'Nữ', phone: '0978901234', province: 'ho_chi_minh', address: '', createdAt: '2026-03-15' },
+        { id: 'BN100420260001', name: 'Trần Văn I', birthDate: '1999-09-12', gender: 'Nữ', phone: '0987890123', province: 'da_nang', address: '', createdAt: '2026-04-10' },
+        { id: 'BN010120260002', name: 'Trần Văn K', birthDate: '1995-03-15', gender: 'Nam', phone: '0901234567', province: 'ho_chi_minh', address: '', createdAt: '2026-01-01' },
+        { id: 'BN050120260002', name: 'Trần Văn L', birthDate: '1992-05-22', gender: 'Nữ', phone: '0912345678', province: 'ho_chi_minh', address: '', createdAt: '2026-01-05' },
+        { id: 'BN100120260002', name: 'Trần Văn M', birthDate: '1988-11-08', gender: 'Nam', phone: '0923456789', province: 'ho_chi_minh', address: '', createdAt: '2026-01-10' },
+        { id: 'BN150220260002', name: 'Trần Văn N', birthDate: '1998-01-30', gender: 'Nữ', phone: '0934567890', province: 'ho_chi_minh', address: '', createdAt: '2026-02-15' },
+        { id: 'BN200220260002', name: 'Trần Văn O', birthDate: '1985-09-12', gender: 'Nam', phone: '0945678901', province: 'ho_chi_minh', address: '', createdAt: '2026-02-20' },
+        { id: 'BN010320260002', name: 'Trần Văn P', birthDate: '1990-05-25', gender: 'Nữ', phone: '0956789012', province: 'da_nang', address: '', createdAt: '2026-03-01' },
+        { id: 'BN100320260002', name: 'Trần Văn Q', birthDate: '1978-12-03', gender: 'Nam', phone: '0967890123', province: 'ha_noi', address: '', createdAt: '2026-03-10' },
+        { id: 'BN150320260002', name: 'Trần Văn R', birthDate: '1995-06-18', gender: 'Nữ', phone: '0978901234', province: 'ho_chi_minh', address: '', createdAt: '2026-03-15' },
+        { id: 'BN100420260002', name: 'Trần Văn S', birthDate: '2000-09-12', gender: 'Nữ', phone: '0987890123', province: 'da_nang', address: '', createdAt: '2026-04-10' }
     ];
 
 
@@ -61,9 +61,14 @@ function seedIfEmpty() {
         const randomDay = 1 + Math.floor(Math.random() * daysInMonth);
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(randomDay).padStart(2, '0')}`;
 
-        const h = 8 + Math.floor(Math.random() * 9); // 8h - 16h
-        const m = Math.random() > 0.5 ? 0 : 30;
-        const timeStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        const slotIndex = Math.floor(Math.random() * 22); // 22 khung giờ từ 07:00 đến 17:30
+        const slotMinutes = 420 + slotIndex * 30; // 420 = 07:00
+        const sh = Math.floor(slotMinutes / 60);
+        const sm = slotMinutes % 60;
+        const endMinutes = slotMinutes + 30;
+        const eh = Math.floor(endMinutes / 60);
+        const em = endMinutes % 60;
+        const timeSlotStr = `${String(sh).padStart(2, '0')}:${String(sm).padStart(2, '0')} - ${String(eh).padStart(2, '0')}:${String(em).padStart(2, '0')}`;
 
         const clinics = MedicalAppointment.CLINICS;
         const doctors = MedicalAppointment.DOCTORS;
@@ -76,14 +81,14 @@ function seedIfEmpty() {
             patientName: p.name,
             patientPhone: p.phone,
             appointmentDate: dateStr,
-            timeSlot: calcTimeSlot(timeStr),
+            timeSlot: timeSlotStr,
             clinic: clinics[Math.floor(Math.random() * clinics.length)],
             services: services[Math.floor(Math.random() * services.length)],
             requestContent: 'Khám sức khỏe ngẫu nhiên ' + (i + 1),
             remark: Math.random() > 0.8 ? 'Ghi chú ngẫu nhiên' : '',
             doctor: doctors[Math.floor(Math.random() * doctors.length)],
             status: statuses[Math.floor(Math.random() * statuses.length)],
-            createdAt: new Date().toLocaleDateString('vi-VN')
+            createdAt: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
         });
     }
 
@@ -102,15 +107,6 @@ function formatDate(dateStr) {
     return `${dd}/${mm}/${yyyy}`;
 }
 
-// Hàm tính thời lượng khám khoảng xung nhịp 30p một.
-function calcTimeSlot(time) {
-    if (!time) return '';
-    const [h, m] = time.split(':').map(Number);
-    const endM = m + 30;
-    const endH = h + Math.floor(endM / 60);
-    const eM = endM % 60;
-    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')} - ${String(endH).padStart(2, '0')}:${String(eM).padStart(2, '0')}`;
-}
 
 // Hàm escape HTML để ngăn chặn XSS khi chèn dữ liệu người dùng qua innerHTML.
 function escapeHTML(str) {
@@ -197,19 +193,14 @@ function renderAptTable() {
         });
     }
 
-    // Tính toán phân trang
-    const total = s.data.length;
-    const start = (s.page - 1) * s.pageSize;
-    const pageData = s.data.slice(start, start + s.pageSize);
-    let i = 0;
     // Render danh sách
-    if (pageData.length === 0) {
+    if (s.data.length === 0) {
         tbody.innerHTML = '<tr class="empty-row"><td colspan="12"><i class="fas fa-calendar-times" style="font-size:2rem;margin-bottom:0.5rem;display:block;opacity:0.3"></i>Không có lịch hẹn nào</td></tr>';
     } else {
         let html = '';
-        for (const a of pageData) {
+        s.data.forEach((a, i) => {
             html += `<tr>
-                <td>${start + i + 1}</td>
+                <td>${i + 1}</td>
                 <td><span class="status-badge ${getStatusClass(a.status)}">${escapeHTML(a.status)}</span></td>
                 <td title="${escapeHTML(a.patientName)}" >${escapeHTML(a.patientName)}</td>
                 <td>${escapeHTML(a.patientPhone)}</td>
@@ -222,11 +213,9 @@ function renderAptTable() {
                 <td title="${escapeHTML(a.remark)}">${escapeHTML(a.remark)}</td>
                 <td><button class="action-btn delete" title="Xóa" data-id="${escapeHTML(a.id)}" data-type="apt"><i class="fas fa-trash-alt"></i></button></td>
                 </tr>`;
-            i++;
-        }
+        });
         tbody.innerHTML = html;
     }
-    renderPagination('apt-pagination', 'apt-pagination-info', total, s.page, s.pageSize, p => { s.page = p; renderAptTable(); });
 }
 function getProvinceName(codename) {
     if (!codename) return '';
@@ -238,32 +227,27 @@ function renderPtTable() {
     const tbody = document.getElementById('patients-tbody');
     const s = appState.pt;
     s.data = s.filteredData || Patient.getAll();
-    const total = s.data.length;
-    const start = (s.page - 1) * s.pageSize;
-    const pageData = s.data.slice(start, start + s.pageSize);
 
-    if (pageData.length === 0) {
+    if (s.data.length === 0) {
         tbody.innerHTML = '<tr class="empty-row"><td colspan="10"><i class="fas fa-user-slash" style="font-size:2rem;margin-bottom:0.5rem;display:block;opacity:0.3"></i>Không có bệnh nhân nào</td></tr>';
     } else {
-
-        tbody.innerHTML = pageData.map((p, i) => {
+        tbody.innerHTML = s.data.map((p, i) => {
             const cityName = getProvinceName(p.province);
             const fullAddress = p.address ? (cityName ? `${p.address}, ${cityName}` : p.address) : (cityName || '—');
             return `<tr>
-            <td>${start + i + 1}</td>
+            <td>${i + 1}</td>
             <td>${escapeHTML(p.id)}</td>
             <td title="${escapeHTML(p.name)}">${escapeHTML(p.name)}</td>
             <td>${formatDate(p.birthDate)}</td>
             <td>${escapeHTML(p.gender)}</td>
             <td title="${escapeHTML(fullAddress)}">${escapeHTML(fullAddress)}</td>
             <td>${escapeHTML(p.phone)}</td>
-            <td>${escapeHTML(p.createdAt)}</td>
+            <td>${formatDate(p.createdAt)}</td>
             <td><button class="action-btn view-apt-btn" title="Xem lịch hẹn" data-patient-id="${escapeHTML(p.id)}"><i class="fas fa-calendar-alt"></i></button></td>
             <td><button class="action-btn delete" title="Xóa" data-id="${escapeHTML(p.id)}" data-type="pt"><i class="fas fa-trash-alt"></i></button></td>
         </tr>`;
         }).join('');
     }
-    renderPagination('pt-pagination', 'pt-pagination-info', total, s.page, s.pageSize, p => { s.page = p; renderPtTable(); });
 }
 
 //Đổ dữ liệu danh sách các tỉnh thành
@@ -271,93 +255,22 @@ function renderProvTable() {
     const tbody = document.getElementById('provinces-tbody');
     const s = appState.prov;
     const data = s.filteredData || appState.provinces || [];
-    const total = data.length;
-    const start = (s.page - 1) * s.pageSize;
-    const pageData = data.slice(start, start + s.pageSize);
-    let i = 0;
-    if (pageData.length === 0) {
+
+    if (data.length === 0) {
         tbody.innerHTML = '<tr class="empty-row"><td colspan="3"><i class="fas fa-map-marked-alt" style="font-size:2rem;margin-bottom:0.5rem;display:block;opacity:0.3"></i>Không tìm thấy tỉnh thành nào</td></tr>';
     } else {
         let html = '';
-        for (let prov of pageData) {
+        data.forEach((prov, i) => {
             html += `<tr>
-                    <td>${start + i + 1}</td>
+                    <td>${i + 1}</td>
                     <td title="${escapeHTML(prov.name)}">${escapeHTML(prov.name)}</td>
                     <td title="${escapeHTML(capitalizeFirst(prov.division_type))}">${escapeHTML(capitalizeFirst(prov.division_type))}</td>
                     </tr>`;
-            i++;
-        }
+        });
         tbody.innerHTML = html;
     }
-
-    renderPagination('prov-pagination', 'prov-pagination-info', total, s.page, s.pageSize, p => { s.page = p; renderProvTable(); });
 }
 
-// Hàm điều tiết hiển thị các nút phân trang trên giao diện
-function renderPagination(containerId, infoId, total, page, pageSize, onChange) {
-    // 1. Lấy các phần tử DOM hiển thị phân trang
-    const container = document.getElementById(containerId);
-    const infoEl = document.getElementById(infoId);
-    // 2. Tính toán tổng số trang (làm tròn lên, tối thiểu là 1 trang)
-    const totalPages = Math.max(1, Math.ceil(total / pageSize));
-    // 3. Hiển thị thông tin mô tả "Trang x / y"
-    if (infoEl) {
-        if (total > 0) {
-            infoEl.textContent = `Trang ${page} / ${totalPages}`;
-        } else {
-            infoEl.textContent = '';
-        }
-    }
-    // Nếu không tìm thấy thẻ chứa các nút phân trang thì dừng hàm
-    if (!container) return;
-    // 4. Tạo nút "Trở về trước" (Prev)
-    let prevDisabled = '';
-    if (page <= 1) {
-        prevDisabled = 'disabled'; // Khóa nút nếu đang ở trang đầu
-    }
-    let html = `<button class="page-btn" ${prevDisabled} data-page="${page - 1}"><i class="fas fa-chevron-left"></i></button>`;
-    // 5. Xác định khoảng trang số sẽ hiển thị xung quanh trang hiện tại (± 2 trang)
-    let startP = Math.max(1, page - 2);
-    let endP = Math.min(totalPages, page + 2);
-    // 6. Hiển thị nút Trang 1 và dấu ba chấm "..." ở đầu nếu cần
-    if (startP > 1) {
-        html += `<button class="page-btn" data-page="1">1</button>`;
-        if (startP > 2) {
-            html += '<span style="padding:0 4px">...</span>';
-        }
-    }
-    // 7. Duyệt và tạo các nút số trang trong khoảng [startP, endP]
-    for (let i = startP; i <= endP; i++) {
-        let activeClass = '';
-        if (i === page) {
-            activeClass = 'active'; // Làm nổi bật trang hiện tại
-        }
-        html += `<button class="page-btn ${activeClass}" data-page="${i}">${i}</button>`;
-    }
-    // 8. Hiển thị dấu ba chấm "..." và nút Trang cuối cùng ở cuối nếu cần
-    if (endP < totalPages) {
-        if (endP < totalPages - 1) {
-            html += '<span style="padding:0 4px">...</span>';
-        }
-        html += `<button class="page-btn" data-page="${totalPages}">${totalPages}</button>`;
-    }
-    // 9. Tạo nút "Kế tiếp" (Next)
-    let nextDisabled = '';
-    if (page >= totalPages) {
-        nextDisabled = 'disabled'; // Khóa nút nếu đang ở trang cuối
-    }
-    html += `<button class="page-btn" ${nextDisabled} data-page="${page + 1}"><i class="fas fa-chevron-right"></i></button>`;
-    // 10. Đưa toàn bộ HTML các nút vào giao diện
-    container.innerHTML = html;
-    // 11. Gán sự kiện click cho tất cả nút phân trang (ngoại trừ các nút bị khóa)
-    const activeButtons = container.querySelectorAll('.page-btn:not(:disabled)');
-    activeButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const selectedPage = parseInt(btn.dataset.page);
-            onChange(selectedPage); // Kích hoạt callback tải dữ liệu trang mới
-        });
-    });
-}
 
 // Hiển thị danh sách lịch hẹn của 1 BN
 function showPatientAppointments(patientId) {
@@ -503,8 +416,8 @@ function resetAptForm() {
     const searchInput = document.getElementById('apt-search-patient');
     if (searchInput) searchInput.disabled = false;
 
-    ['apt-date', 'apt-time', 'apt-request', 'apt-remark'].forEach(id => { const el = document.getElementById(id); if (el) el.value = id === 'apt-time' ? '00:00' : ''; });
-    ['apt-service', 'apt-clinic', 'apt-doctor', 'apt-status'].forEach(id => { const el = document.getElementById(id); if (el) el.selectedIndex = 0; });
+    ['apt-date', 'apt-request', 'apt-remark'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    ['apt-time', 'apt-service', 'apt-clinic', 'apt-doctor', 'apt-status'].forEach(id => { const el = document.getElementById(id); if (el) el.selectedIndex = 0; });
     clearInlineErrors('modal-add-appointment');
 }
 
@@ -675,7 +588,7 @@ function setupEvents() {
                 appState.apt.sortDateDirection = 'desc';
                 icon.className = 'fas fa-sort-down';
             }
-            appState.apt.page = 1;
+
             renderAptTable();
         });
     }
@@ -718,11 +631,7 @@ function setupEvents() {
 
                 // Đổ dữ liệu lên form
                 document.getElementById('apt-date').value = apt.appointmentDate || '';
-                if (apt.timeSlot) {
-                    // Extract start time from 'HH:mm - HH:mm'
-                    const startTime = apt.timeSlot.split(' - ')[0];
-                    document.getElementById('apt-time').value = startTime || '00:00';
-                }
+                document.getElementById('apt-time').value = apt.timeSlot || '';
 
                 document.getElementById('apt-clinic').value = apt.clinic || '';
                 document.getElementById('apt-service').value = apt.services || '';
@@ -811,7 +720,7 @@ function setupEvents() {
                     removeVietnamese(p.name).toLowerCase().includes(kw) || p.codename.toLowerCase().includes(kw)
                 );
             }
-            appState.prov.page = 1;
+
             renderProvTable();
         });
     }
@@ -833,19 +742,12 @@ function setupEvents() {
             const searchInput = document.getElementById('filter-prov-search');
             if (searchInput) searchInput.value = '';
             appState.prov.filteredData = null;
-            appState.prov.page = 1;
+
             renderProvTable();
         });
     }
 
-    const provPageSize = document.getElementById('prov-page-size');
-    if (provPageSize) {
-        provPageSize.addEventListener('change', e => {
-            appState.prov.pageSize = parseInt(e.target.value);
-            appState.prov.page = 1;
-            renderProvTable();
-        });
-    }
+
 
     // Box Tìm kiếm bộ lọc Page 1 (Lịch hẹn)
     document.getElementById('btn-search-apt').addEventListener('click', () => {
@@ -857,7 +759,7 @@ function setupEvents() {
             dateTo: document.getElementById('filter-apt-date-to').value
         };
         appState.apt.filteredData = MedicalAppointment.search(filters);
-        appState.apt.page = 1;
+
         renderAptTable();
     });
 
@@ -883,7 +785,7 @@ function setupEvents() {
     document.getElementById('btn-reset-apt').addEventListener('click', () => {
         ['filter-apt-name', 'filter-apt-phone', 'filter-apt-date-from', 'filter-apt-date-to'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('filter-apt-status').value = '';
-        appState.apt.filteredData = null; appState.apt.page = 1; renderAptTable();
+        appState.apt.filteredData = null; renderAptTable();
     });
 
     // Box Tìm kiếm bộ lọc Page 2 (Danh sách bệnh nhân)
@@ -894,13 +796,13 @@ function setupEvents() {
             gender: document.getElementById('filter-pt-gender').value
         };
         appState.pt.filteredData = Patient.search(filters);
-        appState.pt.page = 1;
+
         renderPtTable();
     });
     document.getElementById('btn-reset-pt').addEventListener('click', () => {
         ['filter-pt-name', 'filter-pt-phone'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('filter-pt-gender').value = '';
-        appState.pt.filteredData = null; appState.pt.page = 1; renderPtTable();
+        appState.pt.filteredData = null; renderPtTable();
     });
 
     // Enter để tìm kiếm ở các ô text trong bộ lọc Bệnh nhân
@@ -916,13 +818,7 @@ function setupEvents() {
         }
     });
 
-    // Box chọn số lượng hiển thị
-    document.getElementById('apt-page-size').addEventListener('change', e => {
-        appState.apt.pageSize = parseInt(e.target.value); appState.apt.page = 1; renderAptTable();
-    });
-    document.getElementById('pt-page-size').addEventListener('change', e => {
-        appState.pt.pageSize = parseInt(e.target.value); appState.pt.page = 1; renderPtTable();
-    });
+
 
     // Nút lưu trong modal thêm lịch hẹn
     document.getElementById('btn-save-appointment').addEventListener('click', () => {
@@ -963,7 +859,7 @@ function setupEvents() {
                 patientName: appState.selectedPatient.name,
                 patientPhone: appState.selectedPatient.phone,
                 appointmentDate: dateVal,
-                timeSlot: calcTimeSlot(timeVal),
+                timeSlot: timeVal,
                 clinic: document.getElementById('apt-clinic').value,
                 services: document.getElementById('apt-service').value,
                 requestContent: document.getElementById('apt-request').value.trim(),
@@ -1151,6 +1047,10 @@ function setupUI() {
             // Lazy load: chỉ load dữ liệu khi click vào nav
             loadPageData(pageId);
 
+            // Ẩn nút "Lên đầu" khi chuyển trang
+            const scrollBtn = document.getElementById('btn-scroll-top');
+            if (scrollBtn) scrollBtn.classList.remove('show');
+
             const titleSpan = item.querySelector('span');
             if (titleSpan && pageTitle) pageTitle.textContent = titleSpan.textContent;
             if (window.innerWidth <= 1024) sidebar.classList.remove('show');
@@ -1204,6 +1104,40 @@ function setupUI() {
         });
     });
 }
+
+// ==================== NÚT LÊN ĐẦU (SCROLL TO TOP) ====================
+function setupScrollToTop() {
+    const btn = document.getElementById('btn-scroll-top');
+    if (!btn) return;
+
+    const THRESHOLD = 100; // Hiện nút khi scroll > 100px
+
+    // Gắn sự kiện scroll cho tất cả table-wrapper
+    document.querySelectorAll('.table-wrapper').forEach(wrapper => {
+        wrapper.addEventListener('scroll', () => {
+            // Chỉ xử lý wrapper thuộc trang đang active
+            const activePage = wrapper.closest('.page-content.active');
+            if (!activePage) return;
+
+            if (wrapper.scrollTop > THRESHOLD) {
+                btn.classList.add('show');
+            } else {
+                btn.classList.remove('show');
+            }
+        });
+    });
+
+    // Click nút: cuộn table-wrapper đang active về đầu
+    btn.addEventListener('click', () => {
+        const activePage = document.querySelector('.page-content.active');
+        if (!activePage) return;
+        const wrapper = activePage.querySelector('.table-wrapper');
+        if (wrapper) {
+            wrapper.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    });
+}
+
 // ==================== KHỞI CHẠY ỨNG DỤNG ====================
 document.addEventListener('DOMContentLoaded', async () => {
     // Check quyền login trước
@@ -1215,6 +1149,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupPatientSearch();    // Bật tính năng tìm kiếm gợi ý bệnh nhân
     setupAvatarUpload();     // Bật tính năng upload ảnh đại diện
     setupEvents();           // Gắn các click event cho nút, table...
+    setupScrollToTop();      // Bật nút "Lên đầu" khi scroll bảng
 
     await fetchProvinces();  // Gọi API lấy tỉnh/thành phố của VN
 
